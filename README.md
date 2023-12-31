@@ -1,7 +1,7 @@
 # RemindGPT
 
 ## Overview
-RemindGPT is a simple yet effective task management tool designed to help you stay organized and focused throughout your day. Its core functionality revolves around letting you enter your wishlist of the day or the upcoming days and providing timely reminders for pending tasks. 
+RemindGPT is a simple yet effective task management tool designed to help you stay organized and focused throughout your day. Its core functionality revolves around passing your wishlist through OpenAI API and come up with a tailored list of task varies in type for you to complete. Right now, the app supports four major categories of tasks. They are enum values: Fitness, Social, Self-Development, and Responsibilities.
 
 ## Features
 - **Smart Task Reminders**: Rather than overwhelming you with a list of all remaining tasks, RemindGPT intelligently considers the time you have before your break. It prompts you to input the available time, and then suggests tasks that can be achieved within that timeframe.
