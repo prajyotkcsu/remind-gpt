@@ -9,15 +9,15 @@ Postman acts like the frontend for the APIs
    {
 wishlist:["cycling","taking a walk","calling mom tonight", "putting trash out", "commit code on git","going to the bank", "calling amazon customer service for a refund"]
    }
-3) App utilizes OpenAI API https://api.openai.com/v1/chat/completions. API transforms your wishlist into tasks and their respective category.
-   Cycling: Fitness,
-   Taking a walk: Fitness,
-   Calling mom: Social,
-   Commit code: Work,
-   Going to the bank: Responsibility,
-   Calling Amazon for refund: Self-help
+3) App utilizes OpenAI API https://api.openai.com/v1/chat/completions. API transforms your wishlist into actionable tasks and puts them into categories. Majorly four, Fitness, Social, Work, Responsibility, Self-dev. Example as shown below,
+   1) Cycling: Fitness,
+   2) Taking a walk: Fitness,
+   3) Calling mom: Social,
+   4) Commit code: Work,
+   5) Going to the bank: Responsibility,
+   6) Calling Amazon for refund: Self-help
    
-4) Further, the app sends the curation to the Kafka server, and appends partitions with values. Here, Kafka has a topic: "assist-topic", with 5 partitions each dedicated for five separate categories of tasks.
+4) Further, upon receiving this as a response from the AI, app sends the curation to the Kafka server, and appends partitions with values. Here, Kafka has a topic: "assist-topic", with 5 partitions each dedicated for five separate categories of tasks.
 5) Until now Kafka producer is doing its part. As soon as user takes a break, an API triggers the application at localhost:8084/tasks
 6) The application now fetches List<Tasks> from the Kafka topic. It constructs the list as list of tasks from each partition/category based on the break duration. Say calling a friend would need 10 min+ taking a walk would require 5 min and both can be done together. These kind of logic are built using OpenAI API. The core of this project is storing key value in Kafka, and logically presenting tasks from each partition and adjusting the offset pointer.
 
@@ -34,7 +34,7 @@ To start using RemindGPT, follow these simple steps:
 ## Installation
 1. Clone the repository: `git clone https://github.com/your-username/RemindGPT.git`
 2. Navigate to the project directory: `cd RemindGPT`
-3. Install dependencies: `npm install` (or relevant command for your project)
+3. Use docker file to run project with its dependencies
 
 ## Usage
 1. Launch the application.
