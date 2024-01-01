@@ -1,23 +1,23 @@
 # RemindGPT
 
 ## Overview
-RemindGPT is a simple yet effective task management tool designed to help you stay organized and focused throughout your day. Its core functionality revolves around parsing your wishlist using OpenAI API (prompt engineering) and coming up with a tailored list of task. These tasks are cheery picked from across different categorites. Right now, the app supports four major categories of tasks. They are enum values: Fitness, Social, Self-Development, and Responsibilities.
+RemindGPT is a simple yet effective task management tool designed to help you stay organized and focused throughout your day. Its core functionality revolves around parsing your wishlist using OpenAI API (prompt engineering) and coming up with a tailored list of task. These tasks are cheery picked from across different categorites. Right now, the app supports five major categories of tasks. They are enum values: Fitness, Social, Self-Development, and Responsibilities, Work.
 
 ## How it is done.
 Postman acts like the frontend for the APIs
-1) Send a request to localhost:8084/whishlist and let OpenAI API interprets your wishlish. This involves categorizing individual tasks into the four types along with possible duration and priority.
-2) Send request to OpenAI on https://api.openai.com/v1/chat/completions as,
+1) Send request to the app on localhost:8084/whishlist as,
    {
-  "model": "gpt-3.5-turbo",
-  "messages": [
-
-    {"role": "user", "content": "Categorize tasks written within <cycling, taking a walk, calling mom, solving leetcode, commit code,going to the bank, clling amazon for refun> into only (self-help, hygine, mindfulness, work, social, fitness, responsibility)"}
-  ]
-}
-
-3) Response to this from OpenAI API, see how ChatGPT interpreted Strings of tasks into apt categories
-   Cycling: Fitness\n- Taking a walk: Fitness\n- Calling mom: Social\n- Solving LeetCode: Work\n- Commit code: Work\n- Going to the bank: Responsibility\n- Calling Amazon for refund: Self-help
-4) Further, upon http response from OpenAI API, the app sends each task to the Kafka topic assist-task as key value pair. Key Fitness and value is Cycling
+wishlist:["cycling","taking a walk","calling mom tonight", "putting trash out", "commit code on git","going to the bank", "calling amazon customer service for a refund"]
+   }
+3) App utilizes OpenAI API https://api.openai.com/v1/chat/completions. API transforms your wishlist into tasks and their respective category.
+   Cycling: Fitness
+   Taking a walk: Fitness
+   Calling mom: Social
+   Commit code: Work
+   Going to the bank: Responsibility
+   Calling Amazon for refund: Self-help
+   
+4) Further, the app sends the curation to the Kafka server, and appends partitions with values. Here, Kafka has a topic: "assist-topic", with 5 partitions each dedicated for five separate categories of tasks.
 5) Until now Kafka producer is doing its part. As soon as user takes a break, an API triggers the application at localhost:8084/tasks
 6) The application now fetches List<Tasks> from the Kafka topic. It constructs the list as list of tasks from each partition/category based on the break duration. Say calling a friend would need 10 min+ taking a walk would require 5 min and both can be done together. These kind of logic are built using OpenAI API. The core of this project is storing key value in Kafka, and logically presenting tasks from each partition and adjusting the offset pointer.
 
