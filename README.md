@@ -10,11 +10,11 @@ Postman acts like the frontend for the APIs
 wishlist:["cycling","taking a walk","calling mom tonight", "putting trash out", "commit code on git","going to the bank", "calling amazon customer service for a refund"]
    }
 3) App utilizes OpenAI API https://api.openai.com/v1/chat/completions. API transforms your wishlist into tasks and their respective category.
-   Cycling: Fitness
-   Taking a walk: Fitness
-   Calling mom: Social
-   Commit code: Work
-   Going to the bank: Responsibility
+   Cycling: Fitness,
+   Taking a walk: Fitness,
+   Calling mom: Social,
+   Commit code: Work,
+   Going to the bank: Responsibility,
    Calling Amazon for refund: Self-help
    
 4) Further, the app sends the curation to the Kafka server, and appends partitions with values. Here, Kafka has a topic: "assist-topic", with 5 partitions each dedicated for five separate categories of tasks.
