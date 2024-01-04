@@ -1,0 +1,33 @@
+change paths inside server.properties and zookeeper.properties file
+
+--to start zookeeper
+zookeeper-server-start.bat ..\..\config\zookeeper.properties
+
+--to start kafka broker
+kafka-server-start.bat ..\..\config\server.properties
+
+--to use and start both Zookeeper and Broker, complete Kafka, use docker images provided by,
+https://github.com/conduktor/kafka-stack-docker-compose
+cd project_path\kafka-stack-docker-compose-master
+docker compose -f zk-single-kafka-single.yml up
+
+--create a topic
+kafka-topics.bat --create --topic todo-assist --bootstrap-server localhost:9092 --replication-factor 1 --partitions 5
+
+--produce to a topic
+kafka-console-producer.bat --broker-list localhost:9092 --topic todo-assist
+ 
+
+kafka-console-producer.bat --broker-list localhost:9092 --topic todo-assist --property parse.key=true --property key.separator=:
+
+--consume from a topic
+kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic todo-assist --from-beginning
+
+kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic todo-assist --partition 0
+similarly create one consumer for each partition for true parallellism
+
+--Delete a topic
+kafka-topics.bat --bootstrap-server localhost:9092 --delete --topic your-topic-name
+
+
+
