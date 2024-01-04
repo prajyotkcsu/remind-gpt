@@ -1,10 +1,12 @@
 package todo.remindgpt;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
 public class KafkaProducer {
 
     @Autowired
@@ -17,6 +19,7 @@ public class KafkaProducer {
     }
 
     public void produceJsonMessage(Task message) {
+        log.info("Message produced:{} ",message);
         kafkaTemplate.send(topicName,message.getType(), String.valueOf(message));
     }
 }

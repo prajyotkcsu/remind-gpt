@@ -15,7 +15,7 @@ public class RemindController {
         this.kafkaProducer = kafkaProducer;
     }
 
-    @PostMapping("/send")
+    @PostMapping("/tasks")
     public void sendMessage(@RequestBody Task message) {
         kafkaProducer.produceJsonMessage(message);
     }
