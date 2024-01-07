@@ -14,6 +14,11 @@ docker compose -f zk-single-kafka-single.yml up
 --create a topic
 kafka-topics.bat --create --topic todo-assist --bootstrap-server localhost:9092 --replication-factor 1 --partitions 5
 
+
+--describe a topic
+kafka-topics.bat --describe --topic todo-assist --bootstrap-server localhost:9092
+
+
 --produce to a topic
 kafka-console-producer.bat --broker-list localhost:9092 --topic todo-assist
  
@@ -27,7 +32,7 @@ kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic todo-assist
 similarly create one consumer for each partition for true parallellism
 
 --Delete a topic
-kafka-topics.bat --bootstrap-server localhost:9092 --delete --topic your-topic-name
+kafka-topics.bat --bootstrap-server localhost:9092 --delete --topic todo-assist
 
 
 
