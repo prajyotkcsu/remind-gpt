@@ -24,7 +24,7 @@ public class RemindGPTController {
     }
     @GetMapping("/consume")
     public void consume() {
-        kafkaService.consume(120);
+        kafkaService.getLastProcessedTask(120);
     }
 }
 
