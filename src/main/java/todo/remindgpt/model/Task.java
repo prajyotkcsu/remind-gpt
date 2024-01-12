@@ -14,8 +14,8 @@ import java.io.Serializable;
 public class Task {
     private String taskType;
     private String taskDesc;
-    private String taskPriority;
-    private String taskDuration;
+    private int taskPriority;
+    private long taskDuration;
 }
 
 /*

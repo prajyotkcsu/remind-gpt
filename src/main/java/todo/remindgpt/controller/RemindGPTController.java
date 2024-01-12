@@ -2,12 +2,18 @@ package todo.remindgpt.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import todo.remindgpt.model.Task;
+import todo.remindgpt.model.TaskDTO;
 import todo.remindgpt.service.KafkaService;
-import todo.remindgpt.model.Tasks;
+
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -18,13 +24,23 @@ public class RemindGPTController {
         this.kafkaService = kafkaService;
     }
     @PostMapping("/produce")
-    public void produce(@RequestBody Tasks message) {
+    public void produceToTopic(@RequestBody TaskDTO message) {
         log.info("New task list arrived: {}",message);
         kafkaService.produce(message);
     }
     @GetMapping("/consume")
-    public void consume() {
-        kafkaService.getLastProcessedTask(120);
+    public ResponseEntity<TaskDTO> consumeFromTopic() {
+        List<Task> orderedTasks = new ArrayList<>();
+        TaskDTO taskDTO = null;
+        try {
+            orderedTasks = kafkaService.getLastProcessedTask(120);
+            taskDTO = TaskDTO.builder()
+                    .tasks(orderedTasks)
+                    .build();
+        } catch (Exception exp) {
+            log.error(exp.getMessage());
+        }
+        return ResponseEntity.ok(taskDTO);
     }
 }
 

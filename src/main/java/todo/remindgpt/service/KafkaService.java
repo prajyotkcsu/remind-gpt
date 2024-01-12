@@ -1,5 +1,7 @@
 package todo.remindgpt.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -10,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import todo.remindgpt.model.Task;
-import todo.remindgpt.model.Tasks;
+import todo.remindgpt.model.TaskDTO;
 
 import java.time.Duration;
 import java.util.*;
@@ -25,7 +27,7 @@ public class KafkaService {
     private KafkaConsumer<String, String> consumer;
     private final String topic = "todo-assist";
 
-    public void produce(Tasks tasks) {
+    public void produce(TaskDTO tasks) {
         log.info("Tasks from gpt:{} ", tasks);
         for (Task task : tasks.getTasks()) {
             // Specify a partition based on the task type (you can use your own logic)
@@ -45,7 +47,9 @@ public class KafkaService {
         log.info("{} tasks published on the topic {}", tasks.getTasks().size(), topic);
         log.info("*********produce end *********");
     }
-    public void getLastProcessedTask(int duration) {
+    public List<Task> getLastProcessedTask(int duration) throws Exception {
+        Queue<Task> orderedTasks=new PriorityQueue<>((o1, o2) -> Integer.compare(o1.getTaskPriority(),o2.getTaskPriority()));
+
         List<PartitionInfo> partitionInfoList = consumer.partitionsFor(topic);
         List<TopicPartition> partitionsToAssign = new ArrayList<>();
         for (PartitionInfo partitionInfo : partitionInfoList) {
@@ -62,9 +66,13 @@ public class KafkaService {
                 for (ConsumerRecord<String, String> record : records) {
                     log.info("Partition: {}, Offset: {}, Key: {}, Value: {}",
                             record.partition(), record.offset(), record.key(), record.value());
+                    ObjectMapper mapper=new ObjectMapper();
+                    log.info("adding {} into orderedTasks",record.value());
+                    orderedTasks.offer(mapper.readValue(record.value(),Task.class));
                 }
             }
         }
         consumer.commitSync();
-    }
+        log.info("orderedTasks: {}",orderedTasks);
+    return new LinkedList<>(orderedTasks);}
 }
