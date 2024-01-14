@@ -1,7 +1,7 @@
 # RemindGPT
 
 ## Overview
-RemindGPT is a simple yet effective task management tool designed to help you stay organized and focused throughout your day. Its core functionality revolves around parsing your wishlist using OpenAI API (prompt engineering) and coming up with a tailored list of task. These tasks are cheery picked from across different categorites. Right now, the app supports five major categories of tasks. They are enum values: Fitness, Social, Self-Development, and Responsibilities, Work.
+RemindGPT is a simple yet effective task management tool designed to help you stay organized and focused throughout your day. Its core functionality revolves around parsing your wishlist using OpenAI API (prompt engineering) and coming up with a tailored list of task. These tasks are cheery picked from across different categorites. Right now, ethe app supports five major categories of tasks. They are enum values: Fitness, Social, Self-Development, and Responsibilities, Work.
 
 ## How it is done.
 Postman acts like the frontend for the APIs
