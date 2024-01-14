@@ -43,5 +43,7 @@ To start using RemindGPT, follow these simple steps:
 4. Receive personalized task recommendations.
 5. Enjoy a productive break with RemindGPT's assistance.
 
-## Contributing
+## Next up
+In time for OpenAI’s grand opening of the hashtag#GPTStore, we are excited to launch the Ask Instacart GPT, a successor to our ChatGPT Plugin introduced back in May. Far more advanced than its predecessor, the new Instacart GPT leverages every advantage of chatgpt multimodality to talk and see. Now you can Ask Instacart what to make for dinner through text, voice, or by snapping a picture of your fridge or a cookbook recipe. With just a few simple clicks, you can have all the ingredients delivered to your door as fast as within an hour. Give it a try and let us know what you think!
+
 
