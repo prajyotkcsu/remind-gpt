@@ -24,10 +24,10 @@ public class RemindGPTController {
         this.kafkaService = kafkaService;
     }
     @PostMapping("/produce")
-    public void produceToTopic(@RequestBody TaskDTO message) {
+    public ResponseEntity<List<String>> produceToTopic(@RequestBody TaskDTO message) {
         log.info("New task list arrived: {}",message);
-        kafkaService.produce(message);
-    }
+        List<String> producedTasks=kafkaService.produce(message);
+        return ResponseEntity.ok(producedTasks);}
     @GetMapping("/consume")
     public ResponseEntity<TaskDTO> consumeFromTopic() {
         List<Task> orderedTasks = new ArrayList<>();

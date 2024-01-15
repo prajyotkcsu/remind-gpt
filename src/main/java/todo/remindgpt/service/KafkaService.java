@@ -1,6 +1,5 @@
 package todo.remindgpt.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -26,29 +25,36 @@ public class KafkaService {
     @Autowired
     private KafkaConsumer<String, String> consumer;
     private final String topic = "todo-assist";
+    private static final int NUM_PARTITIONS = 3; // Adjust as needed
+    private static int partitionCounter = 0;
 
-    public void produce(TaskDTO tasks) {
+    @Autowired
+    private KeyValueService keyValueService;
+
+    public static int assignPartition(String taskType) {
+        int hashCode = taskType.hashCode();
+        int partition = Math.abs(hashCode % NUM_PARTITIONS);
+        return partition;
+    }
+
+    public List<String> produce(TaskDTO tasks) {
         log.info("Tasks from gpt:{} ", tasks);
-        for (Task task : tasks.getTasks()) {
-            // Specify a partition based on the task type (you can use your own logic)
-            int partition;
-            if (task.getTaskType().equals("fitness")) {
-                partition = 0;
-            } else if (task.getTaskType().equals("wellbeing")) {
-                partition = 1;
-            } else {
-                partition = 2;
-            }
-            //int partition = Math.abs(task.getTaskType().hashCode()) % 3; //todo: make partition count dynamic
 
+
+        List<String> producedTasks=new ArrayList<>();
+        int partition=0;
+        for (Task task : tasks.getTasks()) {
+            keyValueService.saveKeyValue(task.getTaskType(),partition++);
+
+            producedTasks.add(String.format("task: %s produced to partition:%s",task,partition));
             log.info("task publishing to partition: {}", partition);
-            producer.send(topic, partition, task.getTaskType(), String.valueOf(task));
+            producer.send(topic, partition, task.getTaskType(), task.toString());
         }
         log.info("{} tasks published on the topic {}", tasks.getTasks().size(), topic);
         log.info("*********produce end *********");
-    }
+    return producedTasks;}
     public List<Task> getLastProcessedTask(int duration) throws Exception {
-        Queue<Task> orderedTasks=new PriorityQueue<>((o1, o2) -> Integer.compare(o1.getTaskPriority(),o2.getTaskPriority()));
+        Queue<Task> orderedTasks=new PriorityQueue<>((o1, o2) -> Integer.compare(o2.getTaskPriority(),o1.getTaskPriority()));
 
         List<PartitionInfo> partitionInfoList = consumer.partitionsFor(topic);
         List<TopicPartition> partitionsToAssign = new ArrayList<>();
@@ -66,13 +72,36 @@ public class KafkaService {
                 for (ConsumerRecord<String, String> record : records) {
                     log.info("Partition: {}, Offset: {}, Key: {}, Value: {}",
                             record.partition(), record.offset(), record.key(), record.value());
-                    ObjectMapper mapper=new ObjectMapper();
-                    log.info("adding {} into orderedTasks",record.value());
-                    orderedTasks.offer(mapper.readValue(record.value(),Task.class));
+                    String stringValue = record.value().toString();
+                    // Extract values from the string (you may need to adjust this based on the actual format)
+                    String taskType = extractValue(stringValue, "taskType");
+                    String taskDesc = extractValue(stringValue, "taskDesc");
+                    int taskPriority = Integer.parseInt(extractValue(stringValue, "taskPriority"));
+                    int taskDuration = Integer.parseInt(extractValue(stringValue, "taskDuration"));
+                    // Create a Task object using the extracted values
+                    Task t = new Task(taskType, taskDesc, taskPriority, taskDuration);
+                    orderedTasks.offer(t);
                 }
             }
         }
+
         consumer.commitSync();
         log.info("orderedTasks: {}",orderedTasks);
-    return new LinkedList<>(orderedTasks);}
+    return new LinkedList<>(orderedTasks);
+    }
+    private static String extractValue(String input, String key) {
+        String keyPrefix = key + "=";
+        int startIndex = input.indexOf(keyPrefix);
+        if (startIndex != -1) {
+            startIndex += keyPrefix.length();
+            int endIndex = input.indexOf(",", startIndex);
+            if (endIndex == -1) {
+                endIndex = input.indexOf(")", startIndex);
+            }
+            if (endIndex != -1) {
+                return input.substring(startIndex, endIndex).trim();
+            }
+        }
+        return "";
+    }
 }

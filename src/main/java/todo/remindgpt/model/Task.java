@@ -11,7 +11,7 @@ import java.io.Serializable;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Task {
+public class Task implements Serializable{
     private String taskType;
     private String taskDesc;
     private int taskPriority;
