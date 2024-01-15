@@ -16,10 +16,17 @@ wishlist:["cycling","taking a walk","calling mom tonight", "putting trash out", 
    4) Commit code: Work,
    5) Going to the bank: Responsibility,
    6) Calling Amazon for refund: Self-help
+  
+These tasks are partitioned as they get introduced to Kafka broker
+The partitions are stored against task types inside Redis, to download redis image use 
+```
+$ docker run --name some-redis -d redis
+```
+
    
-4) Further, upon receiving this as a response from the AI, app sends the curation to the Kafka server, and appends partitions with values. Here, Kafka has a topic: "assist-topic", with 5 partitions each dedicated for five separate categories of tasks.
-5) Until now Kafka producer is doing its part. As soon as user takes a break, an API triggers the application at localhost:8084/tasks
-6) The application now fetches List<Tasks> from the Kafka topic. It constructs the list as list of tasks from each partition/category based on the break duration. Say calling a friend would need 10 min+ taking a walk would require 5 min and both can be done together. These kind of logic are built using OpenAI API. The core of this project is storing key value in Kafka, and logically presenting tasks from each partition and adjusting the offset pointer.
+5) Further, upon receiving this as a response from the AI, app sends the curation to the Kafka server, and appends partitions with values. Here, Kafka has a topic: "assist-topic", with 5 partitions each dedicated for five separate categories of tasks.
+6) Until now Kafka producer is doing its part. As soon as user takes a break, an API triggers the application at localhost:8084/tasks
+7) The application now fetches List<Tasks> from the Kafka topic. It constructs the list as list of tasks from each partition/category based on the break duration. Say calling a friend would need 10 min+ taking a walk would require 5 min and both can be done together. These kind of logic are built using OpenAI API. The core of this project is storing key value in Kafka, and logically presenting tasks from each partition and adjusting the offset pointer.
 
 ## Features
 - **Smart Task Reminders**: Rather than overwhelming you with a list of all remaining tasks, RemindGPT intelligently considers the time you have before your break. It prompts you to input the available time, and then suggests tasks that can be achieved within that timeframe.
