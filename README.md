@@ -8,28 +8,23 @@ RemindGPT is a simple yet effective task management tool designed to help you st
 
 - **Personalized Assistance**: Think of RemindGPT as your friend. It assists you in making the most out of your break time by recommending tasks that align with the time you have available.
 
-## Procedure to use the app
+## Snapshots of apis
 1) Send request to the app
  ```
    localhost:8084/reminder/api/task/produce
 ```
-  
 ![image](https://github.com/prajyotkcsu/remind-gpt/assets/154280801/b4701a9c-940f-4709-94a2-fa90d75e282b)
-
 
 Result: Tasks are produced on separate partitions based on taskType: {wellbeing, social, chores}
 Advantages of partitioning tasks is it's simplier to read/process tasks parallelly from each partition with offset values.
 
 ## Getting Started
 To start using RemindGPT, follow these simple steps:
-1. Install docker locally.
-2. Implement Kafka using docker container found at ```src/main/resources/kafka-compose.yml```
-3. Leverage Redis using docker container found at ```src/main/resources/redis-compose.yml```
-
-## Installation
 1. Clone the repository: `git clone https://github.com/your-username/RemindGPT.git`
 2. Navigate to the project directory: `cd RemindGPT`
-3. Use docker file to run project with its dependencies
+3. Install docker locally.
+4. Implement Kafka using docker container found at ```src/main/resources/kafka-compose.yml```
+5. Leverage Redis using docker container found at ```src/main/resources/redis-compose.yml```
 
 ## Usage
 1. Launch the application.
