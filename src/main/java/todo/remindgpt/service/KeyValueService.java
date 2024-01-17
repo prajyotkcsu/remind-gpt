@@ -17,8 +17,8 @@ public class KeyValueService {
         keyValue.setValue(value);
         keyValueRepository.save(keyValue);
     }
-    public Integer getValueByKey(String key) {
+    public int getValueByKey(String key) {
         KeyValue keyValue = keyValueRepository.findById(key).orElse(null);
-        return (keyValue != null) ? keyValue.getValue() : null;
+        return (keyValue != null) ? keyValue.getValue() : -1;
     }
 }

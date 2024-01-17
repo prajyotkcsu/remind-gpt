@@ -17,6 +17,7 @@ public class KeyValue {
     @Id
     private String key;
     private int value;
+    private int next;
 
     // Getters and setters
 }

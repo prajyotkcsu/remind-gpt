@@ -42,13 +42,17 @@ public class KafkaService {
 
 
         List<String> producedTasks=new ArrayList<>();
-        int partition=0;
+        int i=0;
         for (Task task : tasks.getTasks()) {
-            keyValueService.saveKeyValue(task.getTaskType(),partition++);
-
+            int partition=keyValueService.getValueByKey(task.getTaskType());
+            if(partition<0){
+                keyValueService.saveKeyValue(task.getTaskType(),i);
+                partition=i;
+            }
             producedTasks.add(String.format("task: %s produced to partition:%s",task,partition));
             log.info("task publishing to partition: {}", partition);
             producer.send(topic, partition, task.getTaskType(), task.toString());
+            i++;
         }
         log.info("{} tasks published on the topic {}", tasks.getTasks().size(), topic);
         log.info("*********produce end *********");
