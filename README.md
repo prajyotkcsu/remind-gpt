@@ -17,7 +17,8 @@ RemindGPT is a simple yet effective task management tool designed to help you st
 ![image](https://github.com/prajyotkcsu/remind-gpt/assets/154280801/b4701a9c-940f-4709-94a2-fa90d75e282b)
 
 
-
+Result: Tasks are produced on separate partitions based on taskType: {wellbeing, social, chores}
+Advantages of partitioning tasks is it's simplier to read/process tasks parallelly from each partition with offset values.
 
    
 These tasks are partitioned as they get introduced to Kafka broker
