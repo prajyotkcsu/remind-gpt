@@ -23,8 +23,8 @@ Advantages of partitioning tasks is it's simplier to read/process tasks parallel
 ## Getting Started
 To start using RemindGPT, follow these simple steps:
 1. Install docker locally.
-2. Implement Kafka docker image by navigating ```https://github.com/conduktor/kafka-stack-docker-compose ``` and choose single zookeeper and broker yml option to get started.
-3. Leverage Redis using docker image ``` $ docker run --name some-redis -d redis ```
+2. Implement Kafka using docker container found at ```src/main/resources/kafka-compose.yml```
+3. Leverage Redis using docker container found at ```src/main/resources/redis-compose.yml```
 
 ## Installation
 1. Clone the repository: `git clone https://github.com/your-username/RemindGPT.git`
