@@ -10,9 +10,9 @@ RemindGPT is a simple yet effective task management tool designed to help you st
 
 ## Procedure to use the app
 1) Send request to the app
-   '
+ ```
    localhost:8084/reminder/api/task/produce
-   '
+```
   
 ![image](https://github.com/prajyotkcsu/remind-gpt/assets/154280801/b4701a9c-940f-4709-94a2-fa90d75e282b)
 
