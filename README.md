@@ -14,7 +14,8 @@ RemindGPT is a simple yet effective task management tool designed to help you st
    localhost:8084/reminder/api/task/produce
    '''
   
-![1](https://github.com/prajyotkcsu/remind-gpt/assets/154280801/240bb0bb-6bdd-49c3-9c7a-0b2921dc3ce7)
+![image](https://github.com/prajyotkcsu/remind-gpt/assets/154280801/516c5a7b-79e3-4260-9e73-88c63af6756d)
+
 
 
 
