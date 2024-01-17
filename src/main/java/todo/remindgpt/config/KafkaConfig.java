@@ -61,7 +61,4 @@ public class KafkaConfig {
     public KafkaConsumer<String, String> kafkaConsumerTemplate() {
         return new KafkaConsumer<>(consumerFactory().getConfigurationProperties());
     }
-
-
-
 }
