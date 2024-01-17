@@ -20,23 +20,11 @@ RemindGPT is a simple yet effective task management tool designed to help you st
 Result: Tasks are produced on separate partitions based on taskType: {wellbeing, social, chores}
 Advantages of partitioning tasks is it's simplier to read/process tasks parallelly from each partition with offset values.
 
-   
-These tasks are partitioned as they get introduced to Kafka broker
-The partitions are stored against task types inside Redis, to download redis image use 
-```
-$ docker run --name some-redis -d redis
-```
-
-   
-5) Further, upon receiving this as a response from the AI, app sends the curation to the Kafka server, and appends partitions with values. Here, Kafka has a topic: "assist-topic", with 5 partitions each dedicated for five separate categories of tasks.
-6) Until now Kafka producer is doing its part. As soon as user takes a break, an API triggers the application at localhost:8084/tasks
-7) The application now fetches List<Tasks> from the Kafka topic. It constructs the list as list of tasks from each partition/category based on the break duration. Say calling a friend would need 10 min+ taking a walk would require 5 min and both can be done together. These kind of logic are built using OpenAI API. The core of this project is storing key value in Kafka, and logically presenting tasks from each partition and adjusting the offset pointer.
-
-
 ## Getting Started
 To start using RemindGPT, follow these simple steps:
-1. [Installation](#installation): Instructions on how to install and set up RemindGPT.
-2. [Usage](#usage): A guide on how to use the application and take advantage of its features.
+1. Install docker locally.
+2. Implement Kafka docker image by navigating ```https://github.com/conduktor/kafka-stack-docker-compose ``` and choose single zookeeper and broker yml option to get started.
+3. Leverage Redis using docker image ``` $ docker run --name some-redis -d redis ```
 
 ## Installation
 1. Clone the repository: `git clone https://github.com/your-username/RemindGPT.git`
