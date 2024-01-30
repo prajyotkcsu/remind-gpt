@@ -16,10 +16,20 @@ public class ClientOpenAIController {
     @Autowired
     ClientOpenAIService clientOpenAIService;
     @PostMapping("cat")
-    String initCategories(@RequestBody String cat){
+    String postCategories(@RequestBody String cat){
+        //parse and save to redis.
         log.info("Declaring todo categories......{}",cat);
         String[] cats=cat.split(";");
         clientOpenAIService.initCategories(cats);
+        return "";
+    }
+    @PostMapping("task")
+    String postTasks(@RequestBody String task){
+        //parse and save to redis.
+        log.info("submitting tasks......{}",task);
+        String[] tasks=task.split(";");
+        String[] cats=clientOpenAIService.getCategories();
+        clientOpenAIService.initPrompt(tasks,cats);
         return "";
     }
     @PostMapping("text")

@@ -22,18 +22,30 @@ public class ClientOpenAIService {
     private String content;
 
     public void initCategories(String[] cats){
+        int partition=0;
         for(String cat: cats){
             CategoryRedisCache categoryRedisCache=new CategoryRedisCache();
             categoryRedisCache.setKey(cat);
-            categoryRedisCache.setValue(0);
+            categoryRedisCache.setValue(partition++);
             categoryCacheRepository.save(categoryRedisCache);
         }
-        log.info("Categories saved");
+        log.info("{} new categories saved", cats.length);
     }
-    private String[] getCategories(){
-        String[] cats={};
+
+    public String initPrompt(String[] tasks,String[] cats){
+        String prompt;
+        content=content.replace("[tasks]",tasks.toString());
+        prompt=content.replace("[cats]",cats.toString());
+        //todo: call openai api here and responde with map of task and type
+        return prompt;
+    }
+    public String[] getCategories(){
+        String[] cats=new String[(int)categoryCacheRepository.count()];
         Iterable<CategoryRedisCache> categories= categoryCacheRepository.findAll();
-        categories.forEach(x-> System.out.println(x.getKey())); //lambda and collect to list
+        int i=0;
+        for(CategoryRedisCache c: categories){
+            cats[i++]=c.getKey();
+        }
         return cats;
     }
 
