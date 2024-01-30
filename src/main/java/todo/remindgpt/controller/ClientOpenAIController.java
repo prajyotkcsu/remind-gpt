@@ -25,7 +25,7 @@ public class ClientOpenAIController {
     @PostMapping("text")
     String sendTextToOpenAI(@RequestBody String todo){
         log.info("Sending text to OpenAI API......{}",todo);
-        clientOpenAIService.parseInput("");
+        clientOpenAIService.parseInput(todo);
         return "";
     }
 }

@@ -17,7 +17,7 @@ public class RedisService {
         redisCache.setValue(value);
         redisRepository.save(redisCache);
     }
-    public int getRedis(String key) {
+    public int getRedisValue(String key) {
         RedisCache redisCache = redisRepository.findById(key).orElse(null);
         return (redisCache != null) ? redisCache.getValue() : -1;
     }

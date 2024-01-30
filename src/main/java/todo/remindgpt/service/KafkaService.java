@@ -42,7 +42,7 @@ public class KafkaService {
         List<String> producedTasks=new ArrayList<>();
         int i=0;
         for (Task task : tasks.getTasks()) {
-            int partition= redisService.getValueByKey(task.getTaskType());
+            int partition= redisService.getRedisValue(task.getTaskType());
             producedTasks.add(String.format("task: %s produced to partition:%s",task,partition));
             log.info("task publishing to partition: {}", partition);
             producer.send(topic, partition, task.getTaskType(), task.toString());
