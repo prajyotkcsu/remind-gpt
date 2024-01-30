@@ -1,13 +1,18 @@
 package todo.remindgpt.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.AdminClientConfig;
+import org.apache.kafka.clients.admin.Config;
+import org.apache.kafka.clients.admin.ConfigEntry;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.PartitionInfo;
 import org.apache.kafka.common.TopicPartition;
+import org.apache.kafka.common.config.ConfigResource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import todo.remindgpt.model.Task;
@@ -15,6 +20,7 @@ import todo.remindgpt.model.TaskDTO;
 
 import java.time.Duration;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 
 @Service
 @Slf4j
@@ -29,26 +35,14 @@ public class KafkaService {
     private static int partitionCounter = 0;
 
     @Autowired
-    private KeyValueService keyValueService;
-
-    public static int assignPartition(String taskType) {
-        int hashCode = taskType.hashCode();
-        int partition = Math.abs(hashCode % NUM_PARTITIONS);
-        return partition;
-    }
+    private RedisService redisService;
 
     public List<String> produce(TaskDTO tasks) {
         log.info("Tasks from gpt:{} ", tasks);
-
-
         List<String> producedTasks=new ArrayList<>();
         int i=0;
         for (Task task : tasks.getTasks()) {
-            int partition=keyValueService.getValueByKey(task.getTaskType());
-            if(partition<0){
-                keyValueService.saveKeyValue(task.getTaskType(),i);
-                partition=i;
-            }
+            int partition= redisService.getValueByKey(task.getTaskType());
             producedTasks.add(String.format("task: %s produced to partition:%s",task,partition));
             log.info("task publishing to partition: {}", partition);
             producer.send(topic, partition, task.getTaskType(), task.toString());
@@ -57,6 +51,16 @@ public class KafkaService {
         log.info("{} tasks published on the topic {}", tasks.getTasks().size(), topic);
         log.info("*********produce end *********");
     return producedTasks;}
+
+
+//    private int findOrAssignPartition(String taskType){
+//        int partition=keyValueService.getValueByKey(taskType);
+//        if(partition<0){
+//            keyValueService.saveKeyValue(taskType,i);
+//            partition=i;
+//        }
+//    }
+
     public List<Task> getLastProcessedTask(int duration) throws Exception {
         Queue<Task> orderedTasks=new PriorityQueue<>((o1, o2) -> Integer.compare(o2.getTaskPriority(),o1.getTaskPriority()));
 
@@ -108,4 +112,34 @@ public class KafkaService {
         }
         return "";
     }
+
+
+    @Value("${spring.kafka.bootstrap.servers}")
+    private String bootstrapServers;
+
+    public void updateRetention() {
+        Properties adminProps = new Properties();
+        adminProps.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+
+        try (AdminClient adminClient = AdminClient.create(adminProps)) {
+            ConfigResource resource = new ConfigResource(ConfigResource.Type.TOPIC, topic);
+
+            Config retentionConfig = new Config(Collections.singletonList(
+                    new ConfigEntry("retention.ms", Long.toString(1000))
+            ));
+
+            Map<ConfigResource, Config> configs = Collections.singletonMap(resource, retentionConfig);
+
+            adminClient.alterConfigs(configs).all().get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            // Handle exception as needed
+        }
+    }
+
+
+
+
+
+
 }
