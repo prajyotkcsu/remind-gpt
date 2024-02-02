@@ -4,14 +4,21 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import todo.remindgpt.model.Message;
+import todo.remindgpt.model.Messages;
 import todo.remindgpt.model.OpenAIPayload;
+import todo.remindgpt.model.OpenAIResult;
 import todo.remindgpt.repositories.Category;
 import todo.remindgpt.repositories.CategoryCacheRepository;
 import todo.remindgpt.repositories.RedisRepository;
+
+import java.util.Arrays;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -50,9 +57,22 @@ public class ClientOpenAIService {
         content=content.replace("[tasks]",tasks);
         prompt=content.replace("[categories]",categories.toString());
         log.info("prompt sending to openai:{}", prompt);
-        OpenAIPayload openAIPayload=new OpenAIPayload();
+        HttpHeaders httpHeaders=new HttpHeaders();
+        httpHeaders.setBearerAuth("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");
+        OpenAIPayload openAIPayload = new OpenAIPayload();
+        openAIPayload.setModel("gpt-3.5-turbo");
+
+        Messages message = new Messages();
+        message.setRole("user");
+        message.setContent("Categorize tasks 1)commit git code 2) plant trees 3) talk to a friend 4) water plants- each into just one of these categories self-dev, socialize, wellbeing, chores; give me output in this format [task: category]");
+
+        List<Messages> messagesList = Arrays.asList(message);
+        openAIPayload.setMessages(messagesList);
+        HttpEntity<OpenAIPayload> requestEntity = new HttpEntity<>(openAIPayload, httpHeaders);
+
         //todo: call openai api here and responde with map of task and type
-        restTemplate.exchange("https://api.openai.com/v1/chat/completions", HttpMethod.POST,new HttpEntity<>(openAIPayload),OpenAIResult.class);
+        ResponseEntity<OpenAIResult> responseEntity=restTemplate.exchange("https://api.openai.com/v1/chat/completions", HttpMethod.POST,requestEntity, OpenAIResult.class);
+        log.info("response:{}",responseEntity.getBody().getChoices().get(0));
         return prompt;
     }
     public String[] getCategories(){
