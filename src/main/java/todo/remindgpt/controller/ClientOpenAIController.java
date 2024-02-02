@@ -15,27 +15,20 @@ import todo.remindgpt.service.ClientOpenAIService;
 public class ClientOpenAIController {
     @Autowired
     ClientOpenAIService clientOpenAIService;
+
     @PostMapping("cat")
-    String postCategories(@RequestBody String cat){
+    String postCategories(@RequestBody String cat) {
         //parse and save to redis.
-        log.info("Declaring todo categories......{}",cat);
-        String[] cats=cat.split(";");
+        log.info("Declaring todo categories......{}", cat);
+        String[] cats = cat.split(";");
         clientOpenAIService.initCategories(cats);
         return "";
     }
+
     @PostMapping("task")
-    String postTasks(@RequestBody String task){
-        //parse and save to redis.
-        log.info("submitting tasks......{}",task);
-        String[] tasks=task.split(";");
-        String[] cats=clientOpenAIService.getCategories();
-        clientOpenAIService.initPrompt(tasks,cats);
-        return "";
-    }
-    @PostMapping("text")
-    String sendTextToOpenAI(@RequestBody String todo){
-        log.info("Sending text to OpenAI API......{}",todo);
-        clientOpenAIService.parseInput(todo);
+    String postTasks(@RequestBody String task) {
+        log.info("submitting tasks......{}", task);
+        clientOpenAIService.initPrompt(task);
         return "";
     }
 }

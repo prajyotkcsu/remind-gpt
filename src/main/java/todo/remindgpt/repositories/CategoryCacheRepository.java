@@ -4,5 +4,5 @@ import org.springframework.data.redis.repository.configuration.EnableRedisReposi
 import org.springframework.data.repository.CrudRepository;
 
 @EnableRedisRepositories
-public interface CategoryCacheRepository extends CrudRepository<CategoryRedisCache, String> {
+public interface CategoryCacheRepository extends CrudRepository<Category, String> {
 }

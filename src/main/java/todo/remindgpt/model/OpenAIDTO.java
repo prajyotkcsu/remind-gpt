@@ -13,5 +13,5 @@ import java.util.List;
 @AllArgsConstructor
 public class OpenAIDTO {
     private String model;
-    private List<Messages> messages;
+    private List<Message> messages;
 }

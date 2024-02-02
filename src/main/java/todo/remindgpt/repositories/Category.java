@@ -6,14 +6,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
+
+import java.io.Serializable;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@RedisHash("CategoryCache")
-public class CategoryRedisCache {
+@RedisHash("category")
+public class Category implements Serializable {
     @Id
-    private String key;
-    private int value;
-    private int next;
+    private String id;
+    private int partition;
 }
