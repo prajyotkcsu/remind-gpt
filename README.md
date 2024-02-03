@@ -8,6 +8,13 @@ RemindGPT is a simple yet effective task management tool designed to help you st
 
 - **Personalized Assistance**: Think of RemindGPT as your friend. It assists you in making the most out of your break time by recommending tasks that align with the time you have available.
 
+## System Design: Bird's eye view of the app
+
+![Untitled Diagram drawio](https://github.com/prajyotkcsu/remind-gpt/assets/154280801/ffa8bbc2-ae00-4243-bdb7-e225f23b8c6a)
+
+
+
+
 ## Snapshots of apis
 1) Send request to the app
  ```
@@ -17,6 +24,7 @@ RemindGPT is a simple yet effective task management tool designed to help you st
 
 Result: Tasks are produced on separate partitions based on taskType: {wellbeing, social, chores}
 Advantages of partitioning tasks is it's simplier to read/process tasks parallelly from each partition with offset values.
+
 
 ## Getting Started
 To start using RemindGPT, follow these simple steps:
