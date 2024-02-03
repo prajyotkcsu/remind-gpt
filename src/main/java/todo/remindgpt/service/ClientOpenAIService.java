@@ -1,5 +1,7 @@
 package todo.remindgpt.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -58,21 +60,37 @@ public class ClientOpenAIService {
         prompt=content.replace("[categories]",categories.toString());
         log.info("prompt sending to openai:{}", prompt);
         HttpHeaders httpHeaders=new HttpHeaders();
-        httpHeaders.setBearerAuth("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");
+        httpHeaders.setBearerAuth("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");
         OpenAIPayload openAIPayload = new OpenAIPayload();
         openAIPayload.setModel("gpt-3.5-turbo");
 
         Messages message = new Messages();
         message.setRole("user");
-        message.setContent("Categorize tasks 1)commit git code 2) plant trees 3) talk to a friend 4) water plants- each into just one of these categories self-dev, socialize, wellbeing, chores; give me output in this format [task: category]");
+        message.setContent("Categorize tasks commit git code, plant trees, talk to a friend, water plants- each into just one of these categories self-dev, socialize, wellbeing, chores; give me output in this format [task: category]");
 
         List<Messages> messagesList = Arrays.asList(message);
         openAIPayload.setMessages(messagesList);
         HttpEntity<OpenAIPayload> requestEntity = new HttpEntity<>(openAIPayload, httpHeaders);
 
         //todo: call openai api here and responde with map of task and type
-        ResponseEntity<OpenAIResult> responseEntity=restTemplate.exchange("https://api.openai.com/v1/chat/completions", HttpMethod.POST,requestEntity, OpenAIResult.class);
-        log.info("response:{}",responseEntity.getBody().getChoices().get(0));
+        ResponseEntity<String> responseEntity=restTemplate.exchange("https://api.openai.com/v1/chat/completions", HttpMethod.POST,requestEntity, String.class);
+        String jsonString=responseEntity.getBody().toString();
+        ObjectMapper objectMapper=new ObjectMapper();
+        String out="";
+        try {
+            JsonNode jsonNode=objectMapper.readTree(jsonString);
+            out=jsonNode.path("choices").get(0).path("message").path("content").asText();
+        }
+        catch(Exception ex){
+
+        }
+        String[] taskList=out.split("\n");
+        for(String task: taskList){
+            String[] pair=task.split(":");
+            //todo: validate whether tasks and categories are correctly returned by openai
+            //todo: send pair[0] as value and pair[1] as key to Kafka topic.
+        }
+       // log.info("response:{}",responseEntity.getBody().getChoices().get(0));
         return prompt;
     }
     public String[] getCategories(){
