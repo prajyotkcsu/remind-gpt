@@ -3,10 +3,8 @@ package todo.remindgpt.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import todo.remindgpt.model.TaskInputPayload;
 import todo.remindgpt.service.ClientOpenAIService;
 
 @RestController
@@ -31,4 +29,12 @@ public class ClientOpenAIController {
         clientOpenAIService.initPrompt(task);
         return "";
     }
+
+    @PostMapping("")
+    String postInput(@RequestBody TaskInputPayload taskPayload){
+        clientOpenAIService.parseInput(taskPayload);
+        return "";
+    }
+
+
 }

@@ -12,7 +12,6 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Task implements Serializable{
-    private String taskType;
     private String taskDesc;
     private int taskPriority;
     private long taskDuration;

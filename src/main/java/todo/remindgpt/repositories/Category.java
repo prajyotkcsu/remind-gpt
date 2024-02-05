@@ -16,6 +16,6 @@ import java.io.Serializable;
 @RedisHash("category")
 public class Category implements Serializable {
     @Id
-    private String id;
-    private int partition;
+    private String key;
+    private int value;
 }

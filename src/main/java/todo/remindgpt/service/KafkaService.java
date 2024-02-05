@@ -42,7 +42,8 @@ public class KafkaService {
         List<String> producedTasks=new ArrayList<>();
         int i=0;
         for (Task task : tasks.getTasks()) {
-            int partition= redisService.getRedisValue(task.getTaskType());
+            //int partition= redisService.getRedisValue(task.getTaskType());
+            int partition=0;
             producedTasks.add(String.format("task: %s produced to partition:%s",task,partition));
             log.info("task publishing to partition: {}", partition);
             producer.send(topic, partition, task.getTaskType(), task.toString());
@@ -53,13 +54,11 @@ public class KafkaService {
     return producedTasks;}
 
 
-//    private int findOrAssignPartition(String taskType){
-//        int partition=keyValueService.getValueByKey(taskType);
-//        if(partition<0){
-//            keyValueService.saveKeyValue(taskType,i);
-//            partition=i;
-//        }
-//    }
+    public boolean produce(int partition,String key, String value) {
+        producer.send(topic,partition,key,value);
+        log.info("*********produce end *********");
+        return true;
+    }
 
     public List<Task> getLastProcessedTask(int duration) throws Exception {
         Queue<Task> orderedTasks=new PriorityQueue<>((o1, o2) -> Integer.compare(o2.getTaskPriority(),o1.getTaskPriority()));

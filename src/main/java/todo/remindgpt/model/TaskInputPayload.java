@@ -12,7 +12,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TaskDTO {
+public class TaskInputPayload {
     private List<Task> tasks;
-    private Timestamp timestamp;
+    private List<String> categories;
 }
