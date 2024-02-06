@@ -1,9 +1,7 @@
 # RemindGPT
 
 ## Overview
-RemindGPT is a simple yet effective task management tool designed to help you stay organized and focused throughout your day. Its core functionality revolves around loading your wishlist (an array of tasks) into the ChatGPT engine through the OpenAI API. This process transforms the tasks into tuples of (task, task_type) using prompt engineering, which are then fed into corresponding partitions on a Kafka topic.
-
-Tasks across Kafka partitions are retrieved and stored inside a Priority Queue to sort and return them based on their priorities (high, medium, low), which are set by the user.
+RemindGPT is a simple yet effective task management tool designed to help you stay organized and focused throughout your day. Its core functionality revolves around loading your wishlist (an array of tasks) into the ChatGPT engine through the OpenAI API. This process transforms the tasks into tuples of (task, task_type) using prompt engineering, which are then fed into corresponding partitions on a Kafka topic. Tasks across Kafka partitions are retrieved and stored inside a Priority Queue to sort and return them based on their priorities (high, medium, low), which are set by the user. The Priority Queue is ultimately returned to the user. 
 
 At the moment, the app supports five major categories of tasks, enumerated as Fitness, Social, Self-Development, Responsibilities, and Work.
 
@@ -11,6 +9,9 @@ Example POST request from the user:
 ```
 {
   tasks: ["take a walk", "commit git code", "call a friend", "attend tonight's pizza party", "call Amazon customer service", "take out trash"]
+}
+{
+  priorities:["medium", "high", "medium", "medium", "low", "low"]
 }
 
 ```
@@ -46,6 +47,13 @@ Example HTTP 200 response from the ChatGPT API (requires some parsing to obtain 
   ]
 }
 
+```
+
+returns items form the priority queue every 2 hours based on priority.
+```
+{
+  todoList: ["commit code", "take a walk", "take out trash", "attend tonight's pizza party"]
+}
 ```
 
 
