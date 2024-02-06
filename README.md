@@ -49,7 +49,8 @@ Example HTTP 200 response from the ChatGPT API (requires some parsing to obtain 
 
 ```
 
-returns items form the priority queue every 2 hours based on priority.
+Following is the sorted priority queue.
+returns a single item every 2 hours.
 ```
 {
   todoList: ["commit code", "take a walk", "take out trash", "attend tonight's pizza party"]
