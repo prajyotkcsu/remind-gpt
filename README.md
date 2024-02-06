@@ -1,7 +1,53 @@
 # RemindGPT
 
 ## Overview
-RemindGPT is a simple yet effective task management tool designed to help you stay organized and focused throughout your day. Its core functionality revolves around parsing your wishlist using OpenAI API (prompt engineering) and coming up with a tailored list of task. These tasks are cheery picked from across different categorites. Right now, ethe app supports five major categories of tasks. They are enum values: Fitness, Social, Self-Development, Responsibilities, and Work.
+RemindGPT is a simple yet effective task management tool designed to help you stay organized and focused throughout your day. Its core functionality revolves around loading your wishlist (an array of tasks) into the ChatGPT engine through the OpenAI API. This process transforms the tasks into tuples of (task, task_type) using prompt engineering, which are then fed into corresponding partitions on a Kafka topic.
+
+Tasks across Kafka partitions are retrieved and stored inside a Priority Queue to sort and return them based on their priorities (high, medium, low), which are set by the user.
+
+At the moment, the app supports five major categories of tasks, enumerated as Fitness, Social, Self-Development, Responsibilities, and Work.
+
+Example POST request from the user:
+```
+{
+  tasks: ["take a walk", "commit git code", "call a friend", "attend tonight's pizza party", "call Amazon customer service", "take out trash"]
+}
+
+```
+
+Example HTTP 200 response from the ChatGPT API (requires some parsing to obtain this format):
+```
+{
+  gptTasks: [
+    {
+      task: "take a walk",
+      category: "fitness"
+    },
+    {
+      task: "commit git code at 9 pm tonight",
+      category: "work"
+    },
+    {
+      task: "call a friend",
+      category: "social"
+    },
+    {
+      task: "attend tonight's pizza party",
+      category: "social"
+    },
+    {
+      task: "call Amazon customer service",
+      category: "responsibility"
+    },
+    {
+      task: "take out trash",
+      category: "responsibility"
+    }
+  ]
+}
+
+```
+
 
 ## Features
 - **Smart Task Reminders**: Rather than overwhelming you with a list of all remaining tasks, RemindGPT intelligently considers the time you have before your break. It prompts you to input the available time, and then suggests tasks that can be achieved within that timeframe.
