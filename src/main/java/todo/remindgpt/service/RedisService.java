@@ -13,7 +13,7 @@ public class RedisService {
 
     public void saveCategory(String key, int value) {
         Category category = new Category();
-        category.setId(key);
+        category.setKey(key);
         category.setValue(value);
         categoryCacheRepository.save(category);
     }

@@ -2,6 +2,7 @@ package todo.remindgpt.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,13 +12,11 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import todo.remindgpt.model.Message;
-import todo.remindgpt.model.Messages;
-import todo.remindgpt.model.OpenAIPayload;
-import todo.remindgpt.model.TaskInputPayload;
+import todo.remindgpt.model.*;
 import todo.remindgpt.repositories.Category;
 import todo.remindgpt.repositories.CategoryCacheRepository;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -37,41 +36,51 @@ public class ClientOpenAIService {
 
     @Value("${openai.content}")
     private String content;
+    @Value("${openai.secret}")
+    private String secret;
 
     public ClientOpenAIService() {
     }
 
-    public void initCategories(String[] cats){
+    public void initCategories(@NonNull CategoriesInputPayload cats){
+        String[] categories=cats.getCategories().toArray(new String[0]);
         int partition=0;
-        for(String cat: cats){
+        categoryCacheRepository.deleteAll();
+        for(String cat: categories){
             Category category=new Category();
-            category.setId(cat);
+            category.setKey(cat);
             category.setValue(partition++);
             categoryCacheRepository.save(category);
+
         }
-        log.info("{} new categories saved", cats.length);
+        log.info("{} new categories saved", categories.length);
     }
 
-    public String initPrompt(String tasks){
+    public String initPrompt(TaskInputPayload tasks){
+        List<String> taskList=new ArrayList<>();
+        for(int i=0;i<tasks.getTasks().size();i++){
+            taskList.add(tasks.getTasks().get(i).getTaskDesc());
+        }
+        String[] taskArray=taskList.toArray(new String[0]);
         String prompt;
         Iterable<Category> cats=categoryCacheRepository.findAll();
-        StringBuffer categories=new StringBuffer();
-        for(Category cat: cats){
-            categories.append(cat.getId());
-            categories.append(", ");
+        List<String> keysList = new ArrayList<>();
+        for (Category cat : cats) {
+            keysList.add(cat.getKey());
         }
-        content=content.replace("[tasks]",tasks);
-        prompt=content.replace("[categories]",categories.toString());
+        String[] categoriesArray=keysList.toArray(new String[0]);
+
+        content=content.replace("[tasks]",String.join(",",taskArray));
+        prompt=content.replace("[categories]",String.join(",",categoriesArray));
         log.info("prompt sending to openai:{}", prompt);
         HttpHeaders httpHeaders=new HttpHeaders();
-        httpHeaders.setBearerAuth("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");
+        httpHeaders.setBearerAuth(secret);
         OpenAIPayload openAIPayload = new OpenAIPayload();
         openAIPayload.setModel("gpt-3.5-turbo");
 
         Messages message = new Messages();
         message.setRole("user");
-        message.setContent("Categorize tasks commit git code, plant trees, talk to a friend, water plants- each into just one of these categories self-dev, work, study and give me output in this format [task: category]");
-
+        message.setContent(prompt);
         List<Messages> messagesList = Arrays.asList(message);
         openAIPayload.setMessages(messagesList);
         HttpEntity<OpenAIPayload> requestEntity = new HttpEntity<>(openAIPayload, httpHeaders);
@@ -88,16 +97,16 @@ public class ClientOpenAIService {
         catch(Exception ex){
 
         }
-        String[] taskList=out.split("\n");
-        for(String task: taskList){
+        String[] response=out.split("\n");
+        for(String task: response){
             String[] pair=task.split(":");
             String key=pair[1].trim();
             String value=pair[0].trim();
 
             Iterable<Category> allCategories=categoryCacheRepository.findAll();
             for(Category category: allCategories){
-                if (key.contains(category.getId())){
-                    key=category.getId();
+                if (key.toLowerCase().contains(category.getKey().toLowerCase())){
+                    key=category.getKey();
                     break;
                 }
             }
@@ -116,34 +125,34 @@ public class ClientOpenAIService {
        // log.info("response:{}",responseEntity.getBody().getChoices().get(0));
         return prompt;
     }
-    public String[] getCategories(){
-        String[] cats=new String[(int)categoryCacheRepository.count()];
-        Iterable<Category> categories= categoryCacheRepository.findAll();
-        int i=0;
-        for(Category c: categories){
-            cats[i++]=c.getId();
-        }
-        return cats;
-    }
+//    public String[] getCategories(){
+//        String[] cats=new String[(int)categoryCacheRepository.count()];
+//        Iterable<Category> categories= categoryCacheRepository.findAll();
+//        int i=0;
+//        for(Category c: categories){
+//            cats[i++]=c.getId();
+//        }
+//        return cats;
+//    }
 
-    public void parseInput(String inputText){
-        String[] redisCats;
-        String[] inputs=inputText.split(";");
-        Message messages=new Message();
-        getCategories();
-        content.replace("[tasks]",inputs.toString());
-       // content.replace("[categories]",redisCats.toString());
-        System.out.println("message"+content);
-    }
+//    public void parseInput(String inputText){
+//        String[] redisCats;
+//        String[] inputs=inputText.split(";");
+//        Message messages=new Message();
+//        getCategories();
+//        content.replace("[tasks]",inputs.toString());
+//       // content.replace("[categories]",redisCats.toString());
+//        System.out.println("message"+content);
+//    }
 
-    public void parseInput(TaskInputPayload taskInputPayload){
-        List<String> categories=taskInputPayload.getCategories();
-        if(categories.size()>0){
-            redisService.saveCategory();
-        }
-
-
-    }
+//    public void parseInput(TaskInputPayload taskInputPayload){
+//        List<String> categories=taskInputPayload.getCategories();
+//        if(categories.size()>0){
+//            redisService.saveCategory();
+//        }
+//
+//
+//    }
 
 
 }

@@ -14,5 +14,4 @@ import java.util.List;
 @AllArgsConstructor
 public class TaskInputPayload {
     private List<Task> tasks;
-    private List<String> categories;
 }

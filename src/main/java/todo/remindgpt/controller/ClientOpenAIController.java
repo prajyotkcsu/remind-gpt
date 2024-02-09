@@ -4,37 +4,35 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import todo.remindgpt.model.CategoriesInputPayload;
 import todo.remindgpt.model.TaskInputPayload;
 import todo.remindgpt.service.ClientOpenAIService;
 
 @RestController
-@RequestMapping("/reminder/api/todo")
+@RequestMapping("/reminder/api/")
 @Slf4j
 public class ClientOpenAIController {
     @Autowired
     ClientOpenAIService clientOpenAIService;
 
     @PostMapping("cat")
-    String postCategories(@RequestBody String cat) {
-        //parse and save to redis.
-        log.info("Declaring todo categories......{}", cat);
-        String[] cats = cat.split(";");
-        clientOpenAIService.initCategories(cats);
+    String postCategories(@RequestBody CategoriesInputPayload cat) {
+        clientOpenAIService.initCategories(cat);
         return "";
     }
 
     @PostMapping("task")
-    String postTasks(@RequestBody String task) {
-        log.info("submitting tasks......{}", task);
-        clientOpenAIService.initPrompt(task);
+    String postTasks(@RequestBody TaskInputPayload tasks) {
+        log.info("submitting tasks......{}", tasks);
+        clientOpenAIService.initPrompt(tasks);
         return "";
     }
 
-    @PostMapping("")
-    String postInput(@RequestBody TaskInputPayload taskPayload){
-        clientOpenAIService.parseInput(taskPayload);
-        return "";
-    }
+//    @PostMapping("")
+//    String postInput(@RequestBody TaskInputPayload taskPayload){
+//        clientOpenAIService.parseInput(taskPayload);
+//        return "";
+//    }
 
 
 }

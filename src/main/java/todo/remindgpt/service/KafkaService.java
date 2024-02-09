@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import todo.remindgpt.model.Task;
-import todo.remindgpt.model.TaskDTO;
 
 import java.time.Duration;
 import java.util.*;
@@ -37,21 +36,22 @@ public class KafkaService {
     @Autowired
     private RedisService redisService;
 
-    public List<String> produce(TaskDTO tasks) {
-        log.info("Tasks from gpt:{} ", tasks);
-        List<String> producedTasks=new ArrayList<>();
-        int i=0;
-        for (Task task : tasks.getTasks()) {
-            //int partition= redisService.getRedisValue(task.getTaskType());
-            int partition=0;
-            producedTasks.add(String.format("task: %s produced to partition:%s",task,partition));
-            log.info("task publishing to partition: {}", partition);
-            producer.send(topic, partition, task.getTaskType(), task.toString());
-            i++;
-        }
-        log.info("{} tasks published on the topic {}", tasks.getTasks().size(), topic);
-        log.info("*********produce end *********");
-    return producedTasks;}
+//    public List<String> produce(TaskDTO tasks) {
+//
+//        log.info("Tasks from gpt:{} ", tasks);
+//        List<String> producedTasks=new ArrayList<>();
+//        int i=0;
+//        for (Task task : tasks.getTasks()) {
+//            //int partition= redisService.getRedisValue(task.getTaskType());
+//            int partition=0;
+//            producedTasks.add(String.format("task: %s produced to partition:%s",task,partition));
+//            log.info("task publishing to partition: {}", partition);
+//            producer.send(topic, partition, task.getTaskType(), task.toString());
+//            i++;
+//        }
+//        log.info("{} tasks published on the topic {}", tasks.getTasks().size(), topic);
+//        log.info("*********produce end *********");
+//    return producedTasks;}
 
 
     public boolean produce(int partition,String key, String value) {
@@ -86,8 +86,8 @@ public class KafkaService {
                     int taskPriority = Integer.parseInt(extractValue(stringValue, "taskPriority"));
                     int taskDuration = Integer.parseInt(extractValue(stringValue, "taskDuration"));
                     // Create a Task object using the extracted values
-                    Task t = new Task(taskType, taskDesc, taskPriority, taskDuration);
-                    orderedTasks.offer(t);
+                 //   Task t = new Task(taskType, taskDesc, taskPriority, taskDuration);
+                   // orderedTasks.offer(t);
                 }
             }
         }
