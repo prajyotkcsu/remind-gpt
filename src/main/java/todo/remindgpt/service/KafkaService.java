@@ -30,31 +30,9 @@ public class KafkaService {
     @Autowired
     private KafkaConsumer<String, String> consumer;
     private final String topic = "todo-assist";
-    private static final int NUM_PARTITIONS = 3; // Adjust as needed
-    private static int partitionCounter = 0;
-
-    @Autowired
-    private RedisService redisService;
-
-//    public List<String> produce(TaskDTO tasks) {
-//
-//        log.info("Tasks from gpt:{} ", tasks);
-//        List<String> producedTasks=new ArrayList<>();
-//        int i=0;
-//        for (Task task : tasks.getTasks()) {
-//            //int partition= redisService.getRedisValue(task.getTaskType());
-//            int partition=0;
-//            producedTasks.add(String.format("task: %s produced to partition:%s",task,partition));
-//            log.info("task publishing to partition: {}", partition);
-//            producer.send(topic, partition, task.getTaskType(), task.toString());
-//            i++;
-//        }
-//        log.info("{} tasks published on the topic {}", tasks.getTasks().size(), topic);
-//        log.info("*********produce end *********");
-//    return producedTasks;}
-
 
     public boolean produce(int partition,String key, String value) {
+        log.info("message details key: {}, value: {}, partition: {}, topic: {}", key,value,partition,topic);
         producer.send(topic,partition,key,value);
         log.info("*********produce end *********");
         return true;
@@ -86,7 +64,7 @@ public class KafkaService {
                     int taskPriority = Integer.parseInt(extractValue(stringValue, "taskPriority"));
                     int taskDuration = Integer.parseInt(extractValue(stringValue, "taskDuration"));
                     // Create a Task object using the extracted values
-                 //   Task t = new Task(taskType, taskDesc, taskPriority, taskDuration);
+                    //Task t = new Task(taskType, taskDesc, taskPriority, taskDuration);
                    // orderedTasks.offer(t);
                 }
             }
@@ -135,10 +113,4 @@ public class KafkaService {
             // Handle exception as needed
         }
     }
-
-
-
-
-
-
 }
